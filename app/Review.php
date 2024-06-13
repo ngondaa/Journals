@@ -157,6 +157,7 @@ if (!isset($_SESSION['email'])) {
                 </nav>
                 <!-- Page content-->
                 <div class="container-fluid">
+<<<<<<< HEAD
                     <?php
                     if (isset($_SESSION['email'])) {
                         echo "<div>Welcome, " . htmlspecialchars($_SESSION['email']) . "</div>";
@@ -181,6 +182,51 @@ if (!isset($_SESSION['email'])) {
                                 <input type="submit" class="AdvertButton" value="Submit">
                             </form>
                         </div>
+=======
+                    <button class="btn btn-primary" id="sidebarToggle"></button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="color: white;">
+                        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                            <li class="nav-item active"><a class="nav-link" href="#!" style="color: white;">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="About.php" style="color: white;">About</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">Account</a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="profile.php">Profile</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="../phptools/logout.php">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- Page content-->
+            <div class="container-fluid">
+                <?php
+                if (isset($_SESSION['email'])) {
+                    echo "<div>Welcome, " . htmlspecialchars($_SESSION['email']) . "</div>";
+                } else {
+                    echo '<a href="login.php">Login</a>';
+                }
+                ?>
+                <h3 class="mt-4">Reviews</h3>
+                <div style="display: flex; background-color: rgba(255, 102, 166, 0.278); height: 4px;">&nbsp;</div>
+                <br>
+                <div class="concenter">
+                    <div class="col-6 contact centerText white">
+                        <h1>Send Feedback</h1>
+                        <p>
+                            We value your feedback! Please use this form to send us your reviews, suggestions, or any issues you may have encountered while using our website.
+                        </p>
+                        <!-- Form to enter user review-->
+                        <p id="response"></p>
+                        <form action="Review.php" method="POST" class="feedback-form">
+                            <label for="review">Your Message:</label>
+                            <textarea id="review" name="review" placeholder="Please share your thoughts here..." rows="6" required></textarea>
+                            <input type="submit" class="AdvertButton" value="Submit">
+                        </form>
+>>>>>>> 7cfbbcc261c75a2ed416f414f7c5da1629bf3609
                     </div>
                 </div>
             </div>

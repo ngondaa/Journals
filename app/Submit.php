@@ -259,6 +259,7 @@ if (!isset($_SESSION['email'])) {
                             </li>
 -->
 
+<<<<<<< HEAD
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -278,6 +279,17 @@ if (!isset($_SESSION['email'])) {
                     <div id="profileTabs">
                         <ul>
                             <li><a href="#Submissions">My Journals</a></li>
+=======
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="profile.php">Profile</a>
+                                    
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="../phptools/logout.php">Logout</a>
+                                </div>
+                            </li>
+>>>>>>> 7cfbbcc261c75a2ed416f414f7c5da1629bf3609
                         </ul>
                     </div>
                     <div id="content">
