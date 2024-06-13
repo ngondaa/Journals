@@ -222,7 +222,7 @@
                                     <a class="dropdown-item" href="profile.php">Profile</a>
                                     
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#!">Logout</a>
+                                    <a class="dropdown-item" href="../phptools/logout.php">Logout</a>
                                 </div>
                             </li>
                         </ul>

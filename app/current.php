@@ -158,7 +158,7 @@ $feedback = new Feedback();
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="profile.php">Profile</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="logout.php">Logout</a>
+                                    <a class="dropdown-item" href="../phptools/logout.php">Logout</a>
                                 </div>
                             </li>
                         </ul>
