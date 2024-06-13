@@ -6,9 +6,8 @@ include("../phptools/Feedback.php");
 $feedback = new Feedback();
 
 if (!isset($_SESSION['email'])) {
-    echo "<script>   
-            window.location.href = 'login.php';
-          </script>";
+    header("Location: login.php");
+    exit();
 } else {
 ?>
 <!DOCTYPE html>
@@ -164,7 +163,7 @@ if (!isset($_SESSION['email'])) {
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="profile.php">Profile</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="logout.php">Logout</a>
+                                    <a class="dropdown-item" href="../phptools/logout.php">Logout</a>
                                 </div>
                             </li>
                         </ul>
@@ -182,7 +181,7 @@ if (!isset($_SESSION['email'])) {
                 ?>
                 <h3 class="mt-4">Reviews</h3>
                 <div style="display: flex; background-color: rgba(255, 102, 166, 0.278); height: 4px;">&nbsp;</div>
-               
+
                 <?php
                 if (isset($_SESSION['username'])) {
                     echo "<a href='CustomerDashboard.php'><i class='fa-regular fa-user'></i></a>";
@@ -190,45 +189,44 @@ if (!isset($_SESSION['email'])) {
                     echo "<a href='loginInterface.php'><i class='fa-regular fa-user'></i></a>";
                 }
 
-                    if (isset($_POST["dr"])) {
-                        $feedback->deleteReview($_POST["dr"]);
-                        unset($_POST);
+                if (isset($_POST["dr"])) {
+                    $feedback->deleteReview($_POST["dr"]);
+                    unset($_POST);
+                }
+                ?>
+
+                <div class="reviews-grid">
+                    <?php
+                    $answers = $feedback->loadReviews("*");
+
+                    if ($answers->num_rows > 0) {
+                        while ($row = $answers->fetch_assoc()) {
+                            echo "<div class='review-item'><p><strong>@" . htmlspecialchars($row['email']) . "</strong></p><p>" . htmlspecialchars($row["review"]) . "</p>";
+                            if (isset($_SESSION["email"])) {
+                                if ($row['email'] === $_SESSION["email"]) {
+                                    echo "<form method='POST' action='#'>
+                                        <input type='text' name='dr' value='" . htmlspecialchars($row["reviewID"]) . "' hidden>
+                                        <input type='submit' class='delete-button' value='Delete'>
+                                        </form>";
+                                }
+                            }
+                            echo "</div>";
+                        }
+                    } else {
+                        echo "<h3 class='col-12 centerText'>0 reviews found</h3>";
+                        echo "<h4 class='col-12 centerText'>To make a review go to <a href='Review.php'>Contact Us</a> page</h4>";
                     }
                     ?>
-
-                    <div class="reviews-grid">
-                        <?php
-                        $answers = $feedback->loadReviews("*");
-
-                        if ($answers->num_rows > 0) {
-                            while ($row = $answers->fetch_assoc()) {
-                                echo "<div class='review-item'><p><strong>@" . $row['email'] . "</strong></p><p>" . $row["review"] . "</p>";
-                                if (isset($_SESSION["email"])) {
-                                    if ($row['email'] === $_SESSION["email"]) {
-                                        echo "<form method='POST' action='#'>
-                                <input type='text' name='dr' value='" . $row["reviewID"] . "' hidden>
-                                <input type='submit' class='delete-button' value='Delete'>
-                                </form>";
-                                    }
-                                }
-                                echo "</div>";
-                            }
-                        } else {
-                            echo "<h3 class='col-12 centerText'>0 reviews found</h3>";
-                            echo "<h4 class='col-12 centerText'>To make a review go to <a href='Review.php'>Contact Us</a> page</h4>";
-                        }
-                        ?>
-                    </div>
                 </div>
             </div>
         </div>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="../js/scripts.js"></script>
-    </body>
-
-    </html>
+    </div>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="../js/scripts.js"></script>
+</body>
+</html>
 <?php
 }
 ?>
