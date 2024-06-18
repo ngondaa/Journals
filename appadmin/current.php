@@ -1,35 +1,17 @@
 <?php
 session_start();
-
 include("../phptools/connectionDB.php");
 include("../phptools/Feedback.php");
 
 $feedback = new Feedback();
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['review'])) {
-    if (isset($_SESSION['email'])) {
-        if (strlen($_POST['review']) <= 10000) {
-            $feedback->addReview($_SESSION['email'], $_POST['review']);
-        } else {
-            echo "<script> alert('Review length is too long');</script>";
-        }
-    } else {
-        echo "<script> alert('Please log in to submit a review');</script>";
-    }
-}
-
 if (!isset($_SESSION['email'])) {
-    echo "<script>   
-            window.location.href = 'login.php';
-          </script>";
+    header("Location: login.php");
     exit();
-} 
+} else {
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -49,39 +31,37 @@ if (!isset($_SESSION['email'])) {
             font-weight: 300;
             font-style: normal;
         }
-
         .contact {
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-
+        h1, h3 {
+            color: #333;
+        }
         h1 {
             font-size: 28px;
             margin-bottom: 15px;
-            color: #333;
         }
-
+        h3 {
+            margin-top: 20px;
+        }
         p {
             font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 25px;
             color: #666;
         }
-
         .feedback-form {
             max-width: 400px;
             margin: 0 auto;
         }
-
         label {
             display: block;
             font-size: 16px;
             margin-bottom: 8px;
             color: #333;
         }
-
         textarea {
             width: 100%;
             padding: 10px;
@@ -91,7 +71,6 @@ if (!isset($_SESSION['email'])) {
             font-size: 16px;
             margin-bottom: 20px;
         }
-
         input[type="submit"] {
             width: 100%;
             padding: 12px 20px;
@@ -103,19 +82,58 @@ if (!isset($_SESSION['email'])) {
             font-size: 18px;
             transition: background-color 0.3s ease;
         }
-
         input[type="submit"]:hover {
             background-color: #0d363f7f;
         }
-
         .concenter {
             display: flex;
             justify-content: center;
             align-items: center;
         }
+        .reviews-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .review-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            flex: 1 1 calc(33% - 30px);
+            max-width: calc(33% - 30px);
+            box-sizing: border-box;
+        }
+        .review-item strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .review-item p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .delete-button {
+            padding: 5px 10px;
+            background-color: #ff6666;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-button:hover {
+            background-color: #ff3333;
+        }
+        .centerText {
+            text-align: center;
+        }
     </style>
 </head>
-
 <body>
     <div class="d-flex" id="wrapper">
         <!-- Sidebar-->
@@ -124,6 +142,7 @@ if (!isset($_SESSION['email'])) {
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Dashboard.php">Dashboard</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Library.php">Library</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Current</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Review.php">Review</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Submit.php">Submit</a>
             </div>
@@ -162,21 +181,42 @@ if (!isset($_SESSION['email'])) {
                 ?>
                 <h3 class="mt-4">Reviews</h3>
                 <div style="display: flex; background-color: rgba(255, 102, 166, 0.278); height: 4px;">&nbsp;</div>
-                <br>
-                <div class="concenter">
-                    <div class="col-6 contact centerText white">
-                        <h1>Send Feedback</h1>
-                        <p>
-                            We value your feedback! Please use this form to send us your reviews, suggestions, or any issues you may have encountered while using our website.
-                        </p>
-                        <!-- Form to enter user review-->
-                        <p id="response"></p>
-                        <form action="Review.php" method="POST" class="feedback-form">
-                            <label for="review">Your Message:</label>
-                            <textarea id="review" name="review" placeholder="Please share your thoughts here..." rows="6" required></textarea>
-                            <input type="submit" class="AdvertButton" value="Submit">
-                        </form>
-                    </div>
+
+                <?php
+                if (isset($_SESSION['username'])) {
+                    echo "<a href='CustomerDashboard.php'><i class='fa-regular fa-user'></i></a>";
+                } else {
+                    echo "<a href='loginInterface.php'><i class='fa-regular fa-user'></i></a>";
+                }
+
+                if (isset($_POST["dr"])) {
+                    $feedback->deleteReview($_POST["dr"]);
+                    unset($_POST);
+                }
+                ?>
+
+                <div class="reviews-grid">
+                    <?php
+                    $answers = $feedback->loadReviews("*");
+
+                    if ($answers->num_rows > 0) {
+                        while ($row = $answers->fetch_assoc()) {
+                            echo "<div class='review-item'><p><strong>@" . htmlspecialchars($row['email']) . "</strong></p><p>" . htmlspecialchars($row["review"]) . "</p>";
+                            if (isset($_SESSION["email"])) {
+                                if ($row['email'] === $_SESSION["email"]) {
+                                    echo "<form method='POST' action='#'>
+                                        <input type='text' name='dr' value='" . htmlspecialchars($row["reviewID"]) . "' hidden>
+                                        <input type='submit' class='delete-button' value='Delete'>
+                                        </form>";
+                                }
+                            }
+                            echo "</div>";
+                        }
+                    } else {
+                        echo "<h3 class='col-12 centerText'>0 reviews found</h3>";
+                        echo "<h4 class='col-12 centerText'>To make a review go to <a href='Review.php'>Contact Us</a> page</h4>";
+                    }
+                    ?>
                 </div>
             </div>
         </div>
@@ -186,5 +226,7 @@ if (!isset($_SESSION['email'])) {
     <!-- Core theme JS-->
     <script src="../js/scripts.js"></script>
 </body>
-
 </html>
+<?php
+}
+?>

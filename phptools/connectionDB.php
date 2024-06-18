@@ -1,4 +1,4 @@
-<!-- database connection -->
+
 <?php 
    // $servername = "localhost";
    // $username = "user";

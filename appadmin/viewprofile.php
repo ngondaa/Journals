@@ -1,32 +1,42 @@
 <?php
 session_start();
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "journals";
 
-include("../phptools/connectionDB.php");
-include("../phptools/Feedback.php");
-
-$feedback = new Feedback();
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['review'])) {
-    if (isset($_SESSION['email'])) {
-        if (strlen($_POST['review']) <= 10000) {
-            $feedback->addReview($_SESSION['email'], $_POST['review']);
-        } else {
-            echo "<script> alert('Review length is too long');</script>";
-        }
-    } else {
-        echo "<script> alert('Please log in to submit a review');</script>";
-    }
-}
-
+// Check if user is logged in
 if (!isset($_SESSION['email'])) {
     echo "<script>   
             window.location.href = 'login.php';
           </script>";
-    exit();
-} 
-?>
+    exit;
+}
 
+// Get the logged-in user's email
+$user_email = $_SESSION['email'];
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch user details from the database
+$sql = "SELECT firstname, lastname, email, role FROM users WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $user_email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows == 0) {
+    die("User not found.");
+}
+
+$user = $result->fetch_assoc();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +45,7 @@ if (!isset($_SESSION['email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Ngonda</title>
+    <title>User Profile</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,6 +53,7 @@ if (!isset($_SESSION['email'])) {
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/login.css">
     <style>
         body {
             font-family: "Kanit", sans-serif;
@@ -50,69 +61,48 @@ if (!isset($_SESSION['email'])) {
             font-style: normal;
         }
 
-        .contact {
+        .profile-container {
+            max-width: 600px;
+            margin: 50px auto;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            background-color: #ffffff;
         }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #666;
-        }
-
-        .feedback-form {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        label {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: vertical;
-            font-size: 16px;
+        .profile-header {
+            text-align: center;
             margin-bottom: 20px;
         }
 
-        input[type="submit"] {
+        .profile-details {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profile-details li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .profile-details li span {
+            font-weight: bold;
+        }
+
+        .button {
+            display: block;
             width: 100%;
-            padding: 12px 20px;
-            background-color: #0d363fbd;
-            color: #fff;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
+            text-decoration: none;
         }
 
-        input[type="submit"]:hover {
-            background-color: #0d363f7f;
-        }
-
-        .concenter {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        
     </style>
 </head>
 
@@ -120,10 +110,11 @@ if (!isset($_SESSION['email'])) {
     <div class="d-flex" id="wrapper">
         <!-- Sidebar-->
         <div class="border-end bg-white" id="sidebar-wrapper">
-            <div class="sidebar-heading border-bottom bg-light" style="color:white;">Journals</div>
+            <div class="sidebar-heading border-bottom bg-light" style="color:white">Journals</div>
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Dashboard.php">Dashboard</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Library.php">Library</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="current.php">Current</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Review.php">Review</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Submit.php">Submit</a>
             </div>
@@ -137,7 +128,7 @@ if (!isset($_SESSION['email'])) {
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent" style="color: white;">
                         <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                            <li class="nav-item active"><a class="nav-link" href="#!" style="color: white;">Home</a></li>
+                            <li class="nav-item active"><a class="nav-link" href="Dashboard.php" style="color: white;">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="About.php" style="color: white;">About</a></li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">Account</a>
@@ -153,30 +144,17 @@ if (!isset($_SESSION['email'])) {
             </nav>
             <!-- Page content-->
             <div class="container-fluid">
-                <?php
-                if (isset($_SESSION['email'])) {
-                    echo "<div>Welcome, " . htmlspecialchars($_SESSION['email']) . "</div>";
-                } else {
-                    echo '<a href="login.php">Login</a>';
-                }
-                ?>
-                <h3 class="mt-4">Reviews</h3>
-                <div style="display: flex; background-color: rgba(255, 102, 166, 0.278); height: 4px;">&nbsp;</div>
-                <br>
-                <div class="concenter">
-                    <div class="col-6 contact centerText white">
-                        <h1>Send Feedback</h1>
-                        <p>
-                            We value your feedback! Please use this form to send us your reviews, suggestions, or any issues you may have encountered while using our website.
-                        </p>
-                        <!-- Form to enter user review-->
-                        <p id="response"></p>
-                        <form action="Review.php" method="POST" class="feedback-form">
-                            <label for="review">Your Message:</label>
-                            <textarea id="review" name="review" placeholder="Please share your thoughts here..." rows="6" required></textarea>
-                            <input type="submit" class="AdvertButton" value="Submit">
-                        </form>
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h2>User Profile</h2>
                     </div>
+                    <ul class="profile-details">
+                        <li><span>First Name:</span> <?php echo htmlspecialchars($user['firstname']); ?></li>
+                        <li><span>Last Name:</span> <?php echo htmlspecialchars($user['lastname']); ?></li>
+                        <li><span>Email:</span> <?php echo htmlspecialchars($user['email']); ?></li>
+                        <li><span>Role:</span> <?php echo htmlspecialchars($user['role']); ?></li>
+                    </ul>
+                  
                 </div>
             </div>
         </div>
@@ -188,3 +166,6 @@ if (!isset($_SESSION['email'])) {
 </body>
 
 </html>
+<?php
+$conn->close();
+?>

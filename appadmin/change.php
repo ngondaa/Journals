@@ -1,6 +1,8 @@
 <?php
 
 session_start();
+
+
 include("../phptools/connectionDB.php");
 
 if (!isset($_SESSION['email'])) {
@@ -34,50 +36,34 @@ if (!isset($_SESSION['email'])) {
                 font-style: normal;
             }
 
-            .boxes {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
+            .container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
 
-            .boxes .box {
+            .form {
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border-radius: 12px;
-                width: calc(100% / 3 - 20px);
-                padding: 20px;
-                background-color: #f0f0f0;
-                transition: background-color 0.3s ease;
+                gap: 10px;
+                max-width: 100%;
+                background-color: #fff;
+                padding: 40px;
+                border-radius: 20px;
+                position: relative;
             }
 
-            .boxes .box a {
-                text-decoration: none;
-                color: inherit;
-                text-align: center;
-            }
-
-            .boxes .box i {
-                font-size: 40px;
-                margin-bottom: 10px;
-            }
-
-            .boxes .box .text {
-                font-size: 18px;
-                font-weight: 500;
-            }
-
-            @media (max-width: 768px) {
-                .boxes .box {
-                    width: calc(50% - 20px);
-                }
-            }
-
-            @media (max-width: 576px) {
-                .boxes .box {
-                    width: calc(100% - 20px);
-                }
+            .title::before,
+            .title::after {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                border-radius: 50%;
+                left: 0px;
+                background-color: rgb(192, 20, 92);
+                ;
             }
         </style>
 
@@ -91,7 +77,7 @@ if (!isset($_SESSION['email'])) {
                 <div class="list-group list-group-flush">
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Dashboard.php">Dashboard</a>
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Library.php">Library</a>
-
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="current.php">Current</a>
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Review.php">Review</a>
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Submit.php">Submit</a>
                 </div>
@@ -105,7 +91,7 @@ if (!isset($_SESSION['email'])) {
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent" style="color: white;">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                                <li class="nav-item active"><a class="nav-link" href="Dashboard.php" style="color: white;">Home</a></li>
+                                <li class="nav-item active"><a class="nav-link" href="#!" style="color: white;">Home</a></li>
                                 <li class="nav-item"><a class="nav-link" href="About.php" style="color: white;">About</a></li>
 
                                 <!--
@@ -146,35 +132,35 @@ if (!isset($_SESSION['email'])) {
 
 
                     <div style="display: flex; background-color: rgba(255, 102, 166, 0.278); height: 4px;">&nbsp;</div>
-                    <br><br><br>
-                    <br>
-                    <div class="boxes">
-                        <div class="box box1">
-                            <a href="viewprofile.php">
-                                <i class="uil uil-chart"></i>
-                                <span class="text">View Details</span>
-                            </a>
-                        </div>
-                        <div class="box box2">
-                            <a href="change.php">
-                                <i class="uil uil-chart"></i>
-                                <span class="text">Change Password</span>
-                            </a>
-                        </div>
-                        <div class="box box3">
-                            <a href="#">
-                                <i class="uil uil-files-landscapes"></i>
-                                <span class="text">Delete Profile</span>
-                            </a>
-                        </div>
-                    </div>
 
 
+                    <div class="container"></div>
+                    <form class="form" onsubmit="return confirmPassword()">
+                        <p class="title" style="color: rgb(192, 20, 92) ;">Profile Details </p>
 
+                        <label>
+                            <input id="password" required placeholder="" type="password" class="input" required placeholder="">
+                            <span>Old Password</span>
+                        </label>
+                        <label>
+                            <input id="password" required placeholder="" type="password" class="input" required placeholder="">
+                            <span>New Password</span>
+                        </label>
+                        <label>
+                            <input id="confirmPassword" type="password" class="input" required placeholder="">
+                            <span>Confirm password</span>
+                        </label>
+                        <p id="message"></p>
+                        <button type="submit" class="submit" style="background-color: #0d363fbd;">Update</button>
 
-
+                    </form>
                 </div>
+
+
+
+
             </div>
+        </div>
         </div>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

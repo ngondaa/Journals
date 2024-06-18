@@ -137,7 +137,7 @@ $result = $conn->query($sql);
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Dashboard.php">Dashboard</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Library.php">Library</a>
-
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="current.php">Current</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Review.php">Review</a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="Submit.php">Submit</a>
             </div>

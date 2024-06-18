@@ -36,12 +36,9 @@ session_start();
             if (password_verify($password, $row["passkey"])) {
                 // Authentication successful, set session variable and redirect
                 $_SESSION['email'] = $email;
-                if ($row["role"] == "chiefeditor") {
-                    header("Location: ../appadmin/dashboard.php");
-                } if ($row["role"] == "reviewer") {
-                    header("Location: ../appreview/dashboard.php");
-                }
-                else {
+                if ($row["role"] == "admin") {
+                    header("Location: dashboard.php");
+                } else {
                     header("Location: dashboard.php");
                 }
                 exit;
